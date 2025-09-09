@@ -23,7 +23,7 @@ public class BoardDAO {
 		this.sessionTemplate = sessionTemplate;		
 	}
 		
-	//num의 최대값
+	//num의 최대값이다!!
 	public int getMaxNum() {
 		
 		int maxNum = 0;
