@@ -20,6 +20,16 @@ select nvl(max(buy_no),0) from buy_list
 	 #{total_price})
 </insert>
 
+<!-- 결제하기 눌렀을때 posts_num을 이용해서 title 가져오기
+
+<insert id="giData" parameterType="com.fundee.pro.dto.BuyListDTO">
+ select (b.buy_no, b.buy_date, b.id, b.title, b.qty, b.buy_price,
+ b.total_price)
+	 values (buy_no_seq.nextval, sysdate, #{id}, #{title}, #{qty}, #{buy_price}, 
+	 #{total_price})
+</insert>
+ -->
+
 
 <!-- 구매창에서 수량만 변경해서 저장 -->
 <update id="updateQty" parameterType="com.fundee.pro.dto.BuyListDTO">

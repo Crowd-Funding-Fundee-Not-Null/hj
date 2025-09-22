@@ -75,5 +75,23 @@ public String buyOk(@ModelAttribute("buyInfo") BuyListDTO dto,
 }
 
 
+
+//전체 구매리스트
+//나의 정보에서 확인 가능한 부분
+@RequestMapping(value = "/buyListOk", method = RequestMethod.GET)
+public String buyListOk(@ModelAttribute("buyInfo") BuyListDTO dto,
+						Model model) { //jsp에 넘겨야 하는것
+
+	model.addAttribute("dto",dto);	
+	return "buyOk";
+}
+
+
+
+
+
+
+
+
 }
 

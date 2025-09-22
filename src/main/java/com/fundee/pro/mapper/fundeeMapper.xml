@@ -53,7 +53,7 @@
     </select>
 
     <update id="updateHitCount" parameterType="int">
-        update posts set HITCOUNT = HITCOUNT + 1 where POSTS_NUM = #{postsNum}
+        update posts set hitcount = hitcount + 1 where posts_num = #{postsNum}
     </update>
 
     <!-- UPDATE 쿼리도 jdbcType 추가 -->
