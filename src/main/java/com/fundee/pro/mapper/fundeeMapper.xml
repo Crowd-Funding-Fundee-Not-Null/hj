@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fundee.pro.mapper.FundeeMapper">
+
+    <select id="maxNum" resultType="int">
+        select nvl(max(POSTS_NUM), 0) from posts
+    </select>
+
+    <!-- INSERT 쿼리 수정 - 시퀀스 사용 및 jdbcType 명시 -->
+    <insert id="insertData" parameterType="com.fundee.dto.FundeeDTO">
+        insert into posts(POSTS_NUM, USERID, PRICE, TITLE, GOAL_AMOUNT, CURRENT_AMOUNT,
+        START_DATE, END_DATE, STATUS, CONTENT, HITCOUNT, REG_DATE, IMAGE_FILE) 
+        values (posts_seq.NEXTVAL, 
+                #{userId}, 
+                #{price}, 
+                #{title}, 
+                #{goalAmount}, 
+                #{currentAmount},
+              	#{startDate}, 
+            	#{endDate}, 
+                #{status}, 
+                #{content}, 
+                0, 
+                sysdate, 
+                #{imageFile})
+    </insert>
+
+    <select id="getDataCount" parameterType="map" resultType="int">
+        select nvl(count(*), 0) from posts
+        <if test="searchValue != null and searchValue != ''">
+            where ${searchKey} like '%' || #{searchValue} || '%'
+        </if>
+    </select>
+
+    <select id="getLists" parameterType="map" resultType="com.fundee.dto.FundeeDTO">
+        select * from (select rownum rnum, data.* from (
+            select POSTS_NUM as postsNum, PRICE as price, USERID as userId, TITLE as title, GOAL_AMOUNT as goalAmount, CURRENT_AMOUNT as currentAmount,
+                   START_DATE as startDate, END_DATE as endDate, STATUS as status, CONTENT as content, HITCOUNT as hitCount,
+                   to_char(REG_DATE, 'yyyy-mm-dd') as regDate, IMAGE_FILE as imageFile from posts
+            <if test="searchValue != null and searchValue != ''">
+                where ${searchKey} like '%' || #{searchValue} || '%'
+            </if>
+            order by POSTS_NUM desc) data)
+        <![CDATA[
+        where rnum >= #{start} and rnum <= #{end}
+        ]]>
+    </select>
+
+    <select id="getReadData" parameterType="int" resultType="com.fundee.dto.FundeeDTO">
+        select POSTS_NUM as postsNum, PRICE as price, USERID as userId, TITLE as title, GOAL_AMOUNT as goalAmount, CURRENT_AMOUNT as currentAmount,
+               START_DATE as startDate, END_DATE as endDate, STATUS as status, CONTENT as content, HITCOUNT as hitCount,
+               to_char(REG_DATE, 'yyyy-mm-dd') as regDate, IMAGE_FILE as imageFile from posts where POSTS_NUM = #{postsNum}
+    </select>
+
+    <update id="updateHitCount" parameterType="int">
+        update posts set HITCOUNT = HITCOUNT + 1 where POSTS_NUM = #{postsNum}
+    </update>
+
+    <!-- UPDATE 쿼리도 jdbcType 추가 -->
+    <update id="updateData" parameterType="com.fundee.dto.FundeeDTO">
+        update posts set PRICE=#{price}, 
+                        TITLE=#{title}, 
+                        GOAL_AMOUNT=#{goalAmount},
+                        CURRENT_AMOUNT=#{currentAmount}, 
+                       START_DATE=#{startDate}, 
+                   	   END_DATE=#{endDate}, 
+                        STATUS=#{status}, 
+                        CONTENT=#{content},
+                        IMAGE_FILE=#{imageFile} 
+        where POSTS_NUM = #{postsNum}
+    </update>
+
+    <delete id="deleteData" parameterType="int">
+        delete from posts where POSTS_NUM=#{postsNum}
+    </delete>
+
+</mapper>

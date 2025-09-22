@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:beans="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- Spring MVC @Controller 활성화 -->
+    <annotation-driven />
+    
+    <resources mapping="/resources/**" location="/resources/" />
+    
+    <beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <beans:property name="prefix" value="/WEB-INF/views/" />
+        <beans:property name="suffix" value=".jsp" />
+    </beans:bean>
+
+
+
+
+
+
+
+    <!-- SqlSessionTemplate -->
+    <beans:bean id="sessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+        <beans:constructor-arg ref="sessionFactory"/>
+    </beans:bean>
+
+    <beans:bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <beans:property name="dataSource" ref="dataSource"/>
+        <!-- ★ 매퍼 XML을 클래스패스에서 로딩: src/main/resources/mappers/*.xml -->
+        <beans:property name="mapperLocations" value="classpath*:mappers/*.xml"/>
+        <!-- ★ DTO 패키지 별칭 등록 -->
+        <beans:property name="typeAliasesPackage" value="com.fundee.pro.dto"/>
+        <!-- (선택) 카멜케이스 매핑이 필요하면 아래 주석 해제
+        <beans:property name="configuration">
+            <beans:bean class="org.apache.ibatis.session.Configuration">
+                <beans:property name="mapUnderscoreToCamelCase" value="true"/>
+            </beans:bean>
+        </beans:property>
+        -->
+    </beans:bean>
+
+    <!-- DataSource (Oracle) -->
+    <beans:bean id="dataSource" destroy-method="close"
+                class="org.apache.commons.dbcp.BasicDataSource">
+        <beans:property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+       
+        <beans:property name="url" value="jdbc:oracle:thin:@192.168.0.61:1521:xe"/>
+        <beans:property name="username" value="c##project"/> 
+        <!-- 
+       <beans:property name="url" value="jdbc:oracle:thin:@192.168.0.29:1521:xe"/>
+        <beans:property name="username" value="suzi"/>
+     -->
+        
+        <beans:property name="password" value="a123"/>
+    </beans:bean>
+
+    <!-- (선택) 매퍼 인터페이스 자동 스캔: com.fundee.pro.mapper.* -->
+    <beans:bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <beans:property name="basePackage" value="com.fundee.pro.mapper"/>
+        <beans:property name="sqlSessionTemplateBeanName" value="sessionTemplate"/>
+    </beans:bean>
+
+    <context:component-scan base-package="com.fundee.pro" />
+	</beans:beans>
