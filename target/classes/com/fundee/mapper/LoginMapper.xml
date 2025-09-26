@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fundee.mapper.LoginMapper">
+
+ <insert id="insertMember" parameterType="com.fundee.dto.LoginDTO">
+  INSERT INTO MEMBER
+    (ID, PASSWORD, NICKNAME, NAME, EMAIL, PHONE, ADDRESS1, ROLE, DONG, ADDRESS2, ZIP_CODE)
+  VALUES
+    (#{id}, #{password}, #{nickname}, #{name}, #{email},
+     #{phone}, #{address1}, #{role, jdbcType=NUMERIC}, #{dong}, #{address2}, #{zip_code})
+</insert>
+
+  <update id="updateMember" parameterType="com.fundee.dto.LoginDTO">
+    UPDATE MEMBER
+       SET PASSWORD = #{password},
+           NICKNAME = #{nickname},
+           NAME = #{name},
+           ADDRESS1 = #{address1},
+           ROLE = #{role},
+           EMAIL = #{email},
+           PHONE = #{phone},
+           DONG = #{dong},
+           ADDRESS2 = #{address2},
+           ZIP_CODE = #{zip_code}
+     WHERE ID = #{id}
+  </update>
+
+  <delete id="deleteMember" parameterType="string">
+    DELETE FROM MEMBER WHERE ID = #{id}
+  </delete>
+
+  <!-- Map 방식: parameterType="map" -->
+  <select id="loginCount" parameterType="map" resultType="int">
+    SELECT COUNT(*) FROM MEMBER
+     WHERE ID = #{id}
+       AND PASSWORD = #{password}
+  </select>
+
+  <select id="findRoleById" parameterType="string" resultType="int">
+    SELECT ROLE FROM MEMBER WHERE ID = #{id}
+  </select>
+<!-- 가입할 때 중복되어 있는지 확인 -->
+<select id="existsById" parameterType="string" resultType="int">
+  SELECT COUNT(*) FROM MEMBER WHERE ID = #{id}
+</select>
+
+<!-- 가입 할 때 사용한 이메일 써서 아이디 찾기 -->
+<select id="findIdByEmail" parameterType="string" resultType="string">
+    SELECT ID
+    FROM MEMBER
+    WHERE LOWER(EMAIL) = LOWER(#{email})
+      AND ROWNUM = 1
+  </select>
+  
+<!-- 이메일 중복으로 못 들어가게 막음 -->
+<select id="existsByEmail" parameterType="string" resultType="int">
+    SELECT CASE WHEN COUNT(1) > 0 THEN 1 ELSE 0 END
+    FROM MEMBER
+    WHERE UPPER(TRIM(EMAIL)) = UPPER(TRIM(#{email}))
+  </select>
+
+<select id="existsByNickname" parameterType="string" resultType="int">
+  SELECT CASE WHEN COUNT(1) > 0 THEN 1 ELSE 0 END
+  FROM MEMBER
+  WHERE UPPER(TRIM(NICKNAME)) = UPPER(TRIM(#{nickname}))
+</select>
+
+<select id="findNicknameById" parameterType="string" resultType="string">
+  SELECT NICKNAME FROM MEMBER WHERE ID = #{id}
+</select>
+
+<select id="findPwdByIdAndEmail" parameterType="map" resultType="string">
+  SELECT PASSWORD
+  FROM MEMBER
+  WHERE ID = #{id}
+    AND EMAIL = #{email}
+</select>
+
+<resultMap id="LoginResultMap" type="com.fundee.dto.LoginDTO">
+    <id     property="id"        column="ID"/>
+    <result property="password"  column="PASSWORD"/>
+    <result property="nickname"  column="NICKNAME"/>
+    <result property="name"      column="NAME"/>
+    <result property="address1"   column="ADDRESS1"/>
+   
+    <result property="role"      column="ROLE"/>
+    <result property="email"     column="EMAIL"/>
+    <result property="phone"     column="PHONE"/>
+    <result property="dong"      column="DONG"/>
+    <result property="address2"      column="ADDRESS2"/>
+    <result property="zip_code"      column="ZIP_CODE"/>
+    
+</resultMap>
+
+ <!-- 로그인: ID+PASSWORD 일치 시 사용자 반환 -->
+  <select id="selectLogin" parameterType="map" resultMap="LoginResultMap">
+    SELECT ID, PASSWORD, NICKNAME, NAME, ADDRESS1, ROLE, EMAIL, PHONE, DONG, ADDRESS2, ZIP_CODE
+    FROM MEMBER
+    WHERE ID = #{id}
+      AND PASSWORD = #{password}
+  </select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

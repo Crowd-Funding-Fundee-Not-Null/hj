@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fundee.mapper.PostsMapper">
+
+    <select id="maxNum" resultType="int">
+        select nvl(max(POSTS_NUM), 0) from posts
+    </select>
+
+    <!-- INSERT 쿼리 수정 - 시퀀스 사용 및 jdbcType 명시 -->
+    <insert id="insertData" parameterType="com.fundee.dto.PostsDTO">
+        insert into posts(POSTS_NUM, USERID, PRICE, TITLE, GOAL_AMOUNT, CURRENT_AMOUNT,
+        START_DATE, END_DATE, STATUS, CONTENT, HITCOUNT, REG_DATE, IMAGE_FILE, DETAIL_IMAGEFILE) 
+        values (posts_seq.NEXTVAL, 
+                #{userId, jdbcType=VARCHAR}, 
+                #{price, jdbcType=VARCHAR}, 
+                #{title, jdbcType=VARCHAR}, 
+                #{goal_amount, jdbcType=NUMERIC}, 
+                #{current_amount, jdbcType=NUMERIC},
+                #{start_date, jdbcType=DATE}, 
+                #{end_date, jdbcType=DATE}, 
+                #{status, jdbcType=VARCHAR}, 
+                #{content, jdbcType=VARCHAR}, 
+                0, 
+                sysdate, 
+                #{image_file, jdbcType=VARCHAR},
+                #{detail_imagefile, jdbcType=VARCHAR})
+    </insert>
+
+    <select id="getDataCount" parameterType="map" resultType="int">
+        select nvl(count(*), 0) from posts
+        <if test="searchValue != null and searchValue != ''">
+            where ${searchKey} like '%' || #{searchValue} || '%'
+        </if>
+    </select>
+
+    <select id="getLists" parameterType="map" resultType="com.fundee.dto.PostsDTO">
+        select * from (select rownum rnum, data.* from (
+            select POSTS_NUM, PRICE, USERID, TITLE, GOAL_AMOUNT, CURRENT_AMOUNT,
+                   to_char(START_DATE, 'yyyy-mm-dd') as start_date, to_char(END_DATE, 'yyyy-mm-dd') as end_date, STATUS, CONTENT, HITCOUNT,
+                   to_char(REG_DATE, 'yyyy-mm-dd') as reg_date, IMAGE_FILE, DETAIL_IMAGEFILE from posts
+            <if test="searchValue != null and searchValue != ''">
+                where ${searchKey} like '%' || #{searchValue} || '%'
+            </if>
+            order by POSTS_NUM desc) data)
+        <![CDATA[
+        where rnum >= #{start} and rnum <= #{end}
+        ]]>
+    </select>
+
+    <select id="getReadData" parameterType="int" resultType="com.fundee.dto.PostsDTO">
+        select POSTS_NUM, PRICE, USERID, TITLE, GOAL_AMOUNT, CURRENT_AMOUNT,
+               to_char(START_DATE, 'yyyy-mm-dd') as start_date, to_char(END_DATE, 'yyyy-mm-dd') as end_date, STATUS, CONTENT, HITCOUNT,
+               to_char(REG_DATE, 'yyyy-mm-dd') as reg_date, IMAGE_FILE, DETAIL_IMAGEFILE from posts where POSTS_NUM = #{posts_num}
+    </select>
+
+    <update id="updateHitCount" parameterType="int">
+        update posts set HITCOUNT = HITCOUNT + 1 where POSTS_NUM = #{posts_num}
+    </update>
+
+    <!-- UPDATE 쿼리도 jdbcType 추가 -->
+    <update id="updateData" parameterType="com.fundee.dto.PostsDTO">
+        update posts set PRICE=#{price, jdbcType=VARCHAR}, 
+                        TITLE=#{title, jdbcType=VARCHAR}, 
+                        GOAL_AMOUNT=#{goal_amount, jdbcType=NUMERIC},
+                        CURRENT_AMOUNT=#{current_amount, jdbcType=NUMERIC}, 
+                        START_DATE=#{start_date, jdbcType=DATE},
+                        END_DATE=#{end_date, jdbcType=DATE}, 
+                        STATUS=#{status, jdbcType=VARCHAR}, 
+                        CONTENT=#{content, jdbcType=VARCHAR},
+                        IMAGE_FILE=#{image_file, jdbcType=VARCHAR},
+                        DETAIL_IMAGEFILE=#{detail_imagefile, jdbcType=VARCHAR} 
+        where POSTS_NUM = #{posts_num}
+    </update>
+
+    <delete id="deleteData" parameterType="int">
+        delete from posts where POSTS_NUM=#{posts_num}
+    </delete>
+    
+ 	<select id="getRecommendedProducts" resultType="com.fundee.dto.PostsDTO">
+    <![CDATA[
+    SELECT *
+    FROM (
+        SELECT POSTS_NUM, PRICE, USERID, TITLE, GOAL_AMOUNT, CURRENT_AMOUNT,
+               TO_CHAR(START_DATE, 'yyyy-mm-dd') AS start_date,
+               TO_CHAR(END_DATE, 'yyyy-mm-dd')   AS end_date,
+               STATUS, CONTENT, HITCOUNT,
+               TO_CHAR(REG_DATE, 'yyyy-mm-dd')   AS reg_date,
+               IMAGE_FILE       AS image_file,
+               DETAIL_IMAGEFILE AS detail_imagefile
+        FROM posts
+        ORDER BY CURRENT_AMOUNT DESC
+    ) sub
+    WHERE ROWNUM <= 4
+    ]]>
+</select>
+    
+    
+
+</mapper>

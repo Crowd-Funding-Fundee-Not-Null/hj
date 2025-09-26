@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-/mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fundee.mapper.AdminMapper">
+
+
+
+<select id="getAllMember" resultType="com.fundee.dto.LoginDTO">
+	select * from member
+</select>
+
+
+<select id="getPostsNums" resultType="int">
+	select posts_num from posts
+</select>
+
+
+<select id="get4randomPosts" parameterType="java.util.List" resultType="com.fundee.dto.PostsDTO">
+
+    select * from posts where posts_num in
+    
+    <foreach collection="list" item="id" open="(" separator="," close=")">
+        #{id}
+    </foreach>
+    
+</select>
+
+
+</mapper>

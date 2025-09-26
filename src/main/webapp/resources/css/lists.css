@@ -1,0 +1,127 @@
+@CHARSET "UTF-8";
+
+#buyList {
+	width:900px;
+	margin:30px auto;
+	text-align:left;
+}
+
+#buyList_title {
+	width:870px;   /* 690px - (padding-left+border:3px+border:3px) */
+	padding-left:20px;
+	height:40px;
+	border:3px solid #D6D4A6;
+	text-align:left;
+	font-weight: bold;
+	line-height:40px;
+	font-size:20pt;
+	margin-bottom:30px;
+}
+
+#bbsList_header {
+	height:27px;
+}
+
+#bbsList_header #leftHeader{
+	float:left;
+	width:345px;
+	text-align:left;
+}
+#bbsList_header #rightHeader{
+	float:right;
+	width:345px;
+	text-align:right;
+}
+
+#bbsList_header .selectFiled {
+	border:1px solid; 
+	border-color:#666666; 
+	background-color:#ffffff; 
+	font-family:굴림; 
+	font-size:9pt;
+}
+
+#bbsList_header .textFiled {
+	border:1px solid; 
+	height:13px; 
+	padding:2px 2px 2px 2px; 
+	border-color:#666666; 
+	background-color:#ffffff; 
+	font-family:"굴림"; 
+	font-size:9pt;
+}
+
+#buyAllList {
+	clear:both;
+}
+
+#buyAllList dd {
+	float:left;
+	height:27px;
+	line-height:27px;
+	text-align:center;
+}
+
+#buyAllList #title {
+	height:30px;
+	border-top:1px solid #CCCCCC;
+	border-bottom:1px solid #CCCCCC;
+	background-color: #E6E4E6;
+}
+
+#buyAllList #title dl {
+	display: flex;
+	width: 100%;
+
+}
+
+
+.buy_date, .created {flex:2;}
+.buy_no, .num{flex: 1.5;}
+.title, .subject {flex: 4; text-align:left;}
+.qty{flex: 1;}
+.buy_price, .total_price, .hitCount {flex:2;}
+.name{flex:2;}
+
+#buyAllList #title dt {
+	
+	float:left;
+	height: 27px;
+	line-height:34px;
+	text-align:center;
+}
+
+
+
+
+#buyAllList .buy_date, .num {width:15%;}
+#buyAllList .buy_no, .subject {width:10%;}
+#buyAllList .title, .name {width:35%; text-align: left;}
+#buyAllList .qty, .created {width:5%;}
+#buyAllList .buy_price, .total_price, .hitCount {width:10%;}
+
+#buyAllList #lists {
+	clear:both;
+}
+
+#buyAllList #lists dl {
+	display: flex;
+	width 100%;
+}
+
+#buyAllList dd.subject {
+	width:410px;
+	margin-left:10px;
+	text-align:left;
+}
+#buyAllList a {
+	line-height: 27px;
+}
+
+#buyAllList #footer {
+	clear:both;
+	height:32px;
+	line-height:32px;
+	margin-top:5px;
+	text-align:center;
+}

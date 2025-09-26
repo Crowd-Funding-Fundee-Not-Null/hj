@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-/mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 매퍼 파일 위치 -->
+<mapper namespace="com.fundee.mapper.BuyMapper">
+
+<!-- 구매번호 -->
+<select id="maxNumber" resultType="int">
+select nvl(max(buy_no),0) from buy_list
+</select>
+
+
+<!-- 결제하기 눌렀을때 저장되는 정보 -->
+<insert id="insertData" parameterType="com.fundee.dto.BuyListDTO">
+
+<!-- 인서트 사용하기전에 buy no먼저 생성하기 위한것
+order를 사용함으로 먼저 buy_no 시퀀스 값이 새로운 컬럼에 생성된다.
+
+ 시퀀스 값인 buy_no기준으로 찾을거야
+ keyProperty 이거는 dto와 테이블 컬럼 연결된 변수
+   -->
+ <selectKey keyProperty="buy_no" resultType="int" order="BEFORE">
+        SELECT buy_no_seq.nextval FROM dual
+   </selectKey>
+
+	insert into buy_list (buy_no, buy_date, id, posts_num, qty, buy_price, total_price, name)
+	 values (#{buy_no}, sysdate, #{id}, #{posts_num}, #{qty}, #{buy_price}, #{total_price},
+	 #{name})
+</insert>
+
+
+<!-- 구매창에서 수량만 변경해서 저장 -->
+<update id="updateQty" parameterType="com.fundee.dto.BuyListDTO">
+	update buy_list set qty = #{qty} 
+	where buy_no = #{buy_no}
+</update>
+
+
+<!-- 구매번호로 찾아서 구매제품,수량, 받을주소, 이름 출력.
+*파라미터 타입이란: 쿼리가 실행될때 필요한 객체인데 여기에 쓴
+변수들은 sql쿼리#{}안에 들어가는 변수명과 일치해야한다. 
+한개 데이터만 출력 -->
+<select id="checkData" parameterType="int"
+	resultType="com.fundee.dto.BuyListDTO">
+	select a.title, a.qty, b.price, a.buy_price, c.name, c.add 
+	from buy_list a right outer join posts b on a.title = b.title 
+	left outer join member c on a.id = c.id 
+	where a.buy_no=#{buy_no }
+</select>
+
+
+<!-- 이거는 수량만 변경해서 저장하는 기능으로 바꿔야 할것같아 -->		
+<!-- 마이페이지에서 사용하는 구매자 아이디로 찾아서 전체구매내역 출력(꾸러미닷)
+구매한 상품, 수량, 총결제금액, 구매일자 텍스트 출력	 -->
+		
+<select id="getBuyListAll" parameterType="String"
+	resultType="com.fundee.dto.BuyListDTO">
+	
+	select a.buy_no,a.buy_date,a.posts_num
+	,title,a.qty,a.buy_price,a.total_price
+	from buy_list a right outer join posts b
+	on title = b.title where a.id like #{id}
+</select> 
+
+<select id="getBuyDataCount" parameterType="String"
+	resultType="com.fundee.dto.BuyListDTO">
+select nvl(COUNT(*), 0)
+	from buy_list a right outer join posts b
+	on title = b.title where a.id LIKE #{id};
+</select>
+
+
+<!-- status계산해야하는 값 찾아와 -->
+ <select id="selectPostsInfo" parameterType="int" resultType="com.fundee.dto.PostsDTO">
+        SELECT goal_amount, current_amount, status
+        FROM posts
+        WHERE posts_num = #{posts_num}
+    </select>
+
+    <update id="updatePosts" parameterType="com.fundee.dto.PostsDTO">
+        UPDATE posts
+        SET current_amount = #{current_amount}, status = #{status}
+        WHERE posts_num = #{posts_num}
+    </update>
+
+
+<!-- 상페에서 결제하기 버튼 눌렀을때 - 구매할 상품 및 수량 저장
+//반환값 없이 데이터 저장 기능
+<insert id="buyDATA" parameterType="com.fundee.dto.BuyListDTO">
+	insert into buy_list (buy_no,buy_date,id,title,qty,
+	buy_price) values (#{buyNumber}, sysdate,#{id},
+	#{title},#{qty},(#{qty}*(select price from posts where title=#{title})))
+</insert> -->
+			
+		
+
+</mapper>

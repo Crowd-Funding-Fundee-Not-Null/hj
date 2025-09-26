@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-/mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fundee.mapper.NoticeMapper">
+
+
+
+
+<select id="getAllNotice" parameterType="map" resultType="com.fundee.dto.NoticeDTO">
+	select * from (
+		select rownum rnum, data.* from (
+			select * from notice order by notice_num desc
+		) data
+	<![CDATA[
+	) where rnum>=#{start} and rnum<=#{end}
+	]]>
+</select>
+
+
+<select id="getImportantNotice" resultType="com.fundee.dto.NoticeDTO">
+	select * from notice where importance=1 order by notice_num desc
+</select>
+
+
+<select id="getDataCount" resultType="int">
+	select nvl(count(*),0) from notice
+</select>
+
+
+<select id="getNoticeDetail" parameterType="int" resultType="com.fundee.dto.NoticeDTO">
+	select * from notice where notice_num=#{notice_num}
+</select>
+
+
+<update id="updateNoticeHitCount" parameterType="int">
+	update notice set hitCount=hitCount+1 where notice_num=#{notice_num}
+</update>
+
+
+<select id="getMaxNum" resultType="int">
+	select nvl(max(notice_num),0) from notice
+</select>
+
+
+<insert id="insertNotice" parameterType="com.fundee.dto.NoticeDTO">
+	insert into notice (notice_num,id,title,content,hitcount,reg_date,importance)
+	values (#{notice_num},#{id},#{title},#{content},0,sysdate,#{importance})
+</insert>
+
+
+<delete id="deleteNotice" parameterType="int">
+	delete notice where notice_num=#{notice_num}
+</delete>
+
+
+
+
+
+</mapper>
